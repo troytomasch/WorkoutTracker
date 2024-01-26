@@ -8,6 +8,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 void main() async {
   await Hive.initFlutter();
 
+  Hive.registerAdapter(WorkoutAdapter());
+  Hive.registerAdapter(WorkoutTypeAdapter());
+
   var workoutBox = await Hive.openBox("workoutApp");
 
   runApp(MainApp());
@@ -31,7 +34,7 @@ class _MainAppState extends State<MainApp> {
 
   @override
   void initState() {
-    if (workoutBox.get("workoutdata") == null) {
+    if (workoutBox.get("WORKOUTDATA") == null) {
       db.createSampleData();
     } else {
       db.loadData();

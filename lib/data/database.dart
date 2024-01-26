@@ -14,10 +14,15 @@ class WorkoutDataBase {
   }
 
   void loadData() {
-    workoutsList = _workoutBox.get("workoutdata");
+    var workouts = _workoutBox.get("WORKOUTDATA");
+    for (final workout in workouts) {
+      workoutsList.add(Workout(workout.title, workout.length, workout.date,
+          workout.description, workout.type));
+    }
+    print(workouts);
   }
 
   void updateData() {
-    _workoutBox.put("workoutdata", workoutsList);
+    _workoutBox.put("WORKOUTDATA", workoutsList);
   }
 }
