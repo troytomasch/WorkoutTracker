@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:workout_tracker/components/workout_tile.dart';
 import 'package:workout_tracker/objects/workout.dart';
+import 'package:workout_tracker/pages/add_workout.dart';
 
 class Workouts extends StatefulWidget {
-  Workouts({super.key});
+  final List<Workout> workoutsList;
+
+  Workouts({super.key, required this.workoutsList});
 
   @override
   State<Workouts> createState() => _WorkoutsState();
 }
 
 class _WorkoutsState extends State<Workouts> {
-  List<Workout> workoutsList = [
-    Workout("Easy Run", 1, "1/24/2024", "Chilling.", WorkoutType.run),
-    Workout("Weight Lifting", 0.5, "1/24/2024", "All squats, all the time.",
-        WorkoutType.lift),
-    Workout("Long Bike", 2, "1/20/2024", "Went for a long bike ride.",
-        WorkoutType.bike)
-  ];
-
   void addWorkout() {
     Navigator.pushNamed(context, '/stats');
-    // workoutsList.add(Workout(title, length, date, description, type));
+  }
+
+  void saveWorkout(title, length, date, description, type) {
+    setState(() {
+      widget.workoutsList.add(Workout(title, length, date, description, type));
+      Navigator.pop(context);
+    });
   }
 
   @override
@@ -29,7 +30,10 @@ class _WorkoutsState extends State<Workouts> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Theme.of(context).colorScheme.secondary,
         onPressed: () {
-          Navigator.pushNamed(context, '/add');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddWorkout(saveWorkout: saveWorkout)));
         },
         label: const Row(
           children: [
@@ -42,9 +46,9 @@ class _WorkoutsState extends State<Workouts> {
         ),
       ),
       body: ListView.builder(
-        itemCount: workoutsList.length,
+        itemCount: widget.workoutsList.length,
         itemBuilder: (context, index) => WorkoutTile(
-          workout: workoutsList[index],
+          workout: widget.workoutsList[index],
         ),
       ),
     );

@@ -26,7 +26,7 @@ class WorkoutTile extends StatelessWidget {
                     : (workout.type == WorkoutType.bike
                         ? Icons.directions_bike
                         : Icons.fitness_center),
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).splashColor,
               )
             ]),
             Text(

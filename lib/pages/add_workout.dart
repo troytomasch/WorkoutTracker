@@ -1,12 +1,25 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:workout_tracker/components/button.dart';
 import 'package:workout_tracker/objects/workout.dart';
 
 class AddWorkout extends StatelessWidget {
-  const AddWorkout({super.key});
+  final void Function(String title, double length, String date,
+      String description, WorkoutType type) saveWorkout;
 
-  void saveActivity() {}
+  AddWorkout({super.key, required this.saveWorkout});
+
+  void submitWorkout() {
+    saveWorkout(title.text, double.parse(length.text), date.text,
+        description.text, WorkoutType.bike);
+  }
+
+  TextEditingController title = TextEditingController();
+  TextEditingController date = TextEditingController();
+  TextEditingController description = TextEditingController();
+  TextEditingController type = TextEditingController();
+  TextEditingController length = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -14,19 +27,15 @@ class AddWorkout extends StatelessWidget {
       appBar: AppBar(
         title: Text("Add a Workout"),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        onPressed: () {},
-        label: Text("Save", style: TextStyle(fontSize: 30)),
-      ),
       body: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: ListView(
-          children: const [
+          children: [
             Padding(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: TextField(
-                decoration: InputDecoration(
+                controller: title,
+                decoration: const InputDecoration(
                     label: Text("Title"), hintText: "Enter your title here"),
               ),
             ),
@@ -39,18 +48,26 @@ class AddWorkout extends StatelessWidget {
                   hintText: "Enter the date here",
                 ),
                 selectionHeightStyle: BoxHeightStyle.max,
+                controller: date,
               ),
             ),
             Padding(
               padding: EdgeInsets.all(12),
               child: DropdownMenu(
                 width: 350,
-                dropdownMenuEntries: [
+                controller: type,
+                menuStyle: MenuStyle(
+                    backgroundColor: MaterialStatePropertyAll(
+                        Theme.of(context).colorScheme.surface)),
+                dropdownMenuEntries: const [
                   DropdownMenuEntry(value: WorkoutType.run, label: "Run"),
                   DropdownMenuEntry(value: WorkoutType.bike, label: "Bike"),
-                  DropdownMenuEntry(value: WorkoutType.lift, label: "Lift")
+                  DropdownMenuEntry(
+                    value: WorkoutType.lift,
+                    label: "Lift",
+                  )
                 ],
-                label: Text("Workout Type"),
+                label: const Text("Workout Type"),
               ),
             ),
             Padding(
@@ -61,24 +78,25 @@ class AddWorkout extends StatelessWidget {
                     label: Text("Length"),
                     hintText: "Enter the length of the workout here"),
                 selectionHeightStyle: BoxHeightStyle.max,
+                controller: length,
               ),
             ),
             Padding(
               padding: EdgeInsets.all(12),
               child: TextField(
+                controller: description,
                 decoration: InputDecoration(
                     label: Text("Description"),
                     hintText: "Enter the desrciption here"),
               ),
             ),
+            MyButton(
+              text: "Save",
+              onPressed: submitWorkout,
+            )
           ],
         ),
       ),
     );
-    // return const Column(children: [
-    //   TextField(
-    //     decoration: InputDecoration(label: Text("Title")),
-    //   ),
-    // ]);
   }
 }

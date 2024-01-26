@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:workout_tracker/pages/add_workout.dart';
 import 'package:workout_tracker/pages/stats.dart';
 import 'package:workout_tracker/pages/workouts.dart';
+import 'package:workout_tracker/objects/workout.dart';
 
 void main() {
   runApp(MainApp());
@@ -15,9 +15,17 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  final List _pages = [Workouts(), Stats()];
-
   int _selectedPage = 0;
+
+  static List<Workout> workoutsList = [
+    Workout("Easy Run", 1, "1/24/2024", "Chilling.", WorkoutType.run),
+    Workout("Weight Lifting", 0.5, "1/24/2024", "All squats, all the time.",
+        WorkoutType.lift),
+    Workout("Long Bike", 2, "1/20/2024", "Went for a long bike ride.",
+        WorkoutType.bike)
+  ];
+
+  final _pages = [Workouts(workoutsList: workoutsList), const Stats()];
 
   void _nagivateBottomBar(int index) {
     setState(() {
@@ -29,9 +37,10 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/workouts': (context) => Workouts(),
+        '/workouts': (context) => Workouts(
+              workoutsList: workoutsList,
+            ),
         '/stats': (context) => Stats(),
-        '/add': (context) => AddWorkout()
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -39,14 +48,14 @@ class _MainAppState extends State<MainApp> {
           colorScheme: const ColorScheme(
             primary: Color.fromARGB(255, 58, 57, 57),
             brightness: Brightness.dark,
-            onPrimary: Colors.white54,
+            onPrimary: Colors.white70,
             secondary: Colors.green,
             onSecondary: Colors.white,
             error: Colors.redAccent,
             onError: Colors.white,
             background: Color.fromARGB(255, 58, 57, 57),
             onBackground: Colors.white,
-            surface: Color.fromARGB(255, 58, 57, 57),
+            surface: Color.fromARGB(255, 27, 27, 27),
             onSurface: Colors.green,
           )),
       home: Scaffold(
