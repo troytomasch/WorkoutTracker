@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:workout_tracker/components/workout_tile.dart';
+import 'package:workout_tracker/data/database.dart';
 import 'package:workout_tracker/objects/workout.dart';
 import 'package:workout_tracker/pages/add_workout.dart';
 
 class Workouts extends StatefulWidget {
   final List<Workout> workoutsList;
+  final VoidCallback updateData;
 
-  Workouts({super.key, required this.workoutsList});
+  Workouts({super.key, required this.workoutsList, required this.updateData});
 
   @override
   State<Workouts> createState() => _WorkoutsState();
@@ -20,8 +23,10 @@ class _WorkoutsState extends State<Workouts> {
   void saveWorkout(title, length, date, description, type) {
     setState(() {
       widget.workoutsList.add(Workout(title, length, date, description, type));
-      Navigator.pop(context);
     });
+
+    widget.updateData();
+    Navigator.pop(context);
   }
 
   @override

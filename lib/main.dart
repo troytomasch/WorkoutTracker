@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:workout_tracker/data/database.dart';
 import 'package:workout_tracker/pages/stats.dart';
 import 'package:workout_tracker/pages/workouts.dart';
 import 'package:workout_tracker/objects/workout.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+
+  var workoutBox = await Hive.openBox("workoutApp");
+
   runApp(MainApp());
 }
 
@@ -17,16 +23,6 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int _selectedPage = 0;
 
-  static List<Workout> workoutsList = [
-    Workout("Easy Run", 1, "1/24/2024", "Chilling.", WorkoutType.run),
-    Workout("Weight Lifting", 0.5, "1/24/2024", "All squats, all the time.",
-        WorkoutType.lift),
-    Workout("Long Bike", 2, "1/20/2024", "Went for a long bike ride.",
-        WorkoutType.bike)
-  ];
-
-  final _pages = [Workouts(workoutsList: workoutsList), const Stats()];
-
   void _nagivateBottomBar(int index) {
     setState(() {
       _selectedPage = index;
@@ -34,11 +30,34 @@ class _MainAppState extends State<MainApp> {
   }
 
   @override
+  void initState() {
+    if (workoutBox.get("workoutdata") == null) {
+      db.createSampleData();
+    } else {
+      db.loadData();
+    }
+    super.initState();
+  }
+
+  var workoutBox = Hive.box("workoutApp");
+
+  WorkoutDataBase db = WorkoutDataBase();
+
+  @override
   Widget build(BuildContext context) {
+    final pages = [
+      Workouts(
+        workoutsList: db.workoutsList,
+        updateData: db.updateData,
+      ),
+      const Stats()
+    ];
+
     return MaterialApp(
       routes: {
         '/workouts': (context) => Workouts(
-              workoutsList: workoutsList,
+              workoutsList: db.workoutsList,
+              updateData: db.updateData,
             ),
         '/stats': (context) => Stats(),
       },
@@ -67,7 +86,7 @@ class _MainAppState extends State<MainApp> {
           ),
           backgroundColor: Colors.black38,
         ),
-        body: _pages[_selectedPage],
+        body: pages[_selectedPage],
         bottomNavigationBar: BottomNavigationBar(
           items: const [
             BottomNavigationBarItem(
