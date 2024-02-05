@@ -1,36 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:workout_tracker/components/workout_tile.dart';
 import 'package:workout_tracker/data/database.dart';
+import 'package:workout_tracker/main.dart';
 import 'package:workout_tracker/objects/workout.dart';
 import 'package:workout_tracker/pages/add_workout.dart';
 
-class Workouts extends StatefulWidget {
-  final List<Workout> workoutsList;
-  final VoidCallback updateData;
-
-  Workouts({super.key, required this.workoutsList, required this.updateData});
+class Workouts extends ConsumerStatefulWidget {
+  Workouts({super.key});
 
   @override
-  State<Workouts> createState() => _WorkoutsState();
+  _WorkoutsState createState() => _WorkoutsState();
 }
 
-class _WorkoutsState extends State<Workouts> {
+class _WorkoutsState extends ConsumerState<Workouts> {
   void addWorkout() {
     Navigator.pushNamed(context, '/stats');
   }
 
   void saveWorkout(title, length, date, description, type) {
     setState(() {
-      widget.workoutsList.add(Workout(title, length, date, description, type));
+      ref
+          .read(localDatabaseProvider)
+          .addToList(Workout(title, length, date, description, type));
     });
 
-    widget.updateData();
+    ref.read(localDatabaseProvider).updateData();
     Navigator.pop(context);
+  }
+
+  final workoutBox = Hive.box("workoutApp");
+
+  @override
+  void initState() {
+    if (workoutBox.get("WORKOUTDATA") != null) {
+      ref.read(localDatabaseProvider).loadData();
+    } else {
+      ref.read(localDatabaseProvider).createSampleData();
+    }
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final workoutList = ref.watch(localDatabaseProvider).workoutsList;
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -51,9 +66,9 @@ class _WorkoutsState extends State<Workouts> {
         ),
       ),
       body: ListView.builder(
-        itemCount: widget.workoutsList.length,
+        itemCount: workoutList.length,
         itemBuilder: (context, index) => WorkoutTile(
-          workout: widget.workoutsList[index],
+          workout: workoutList[index],
         ),
       ),
     );

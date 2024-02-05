@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:workout_tracker/data/database.dart';
 import 'package:workout_tracker/pages/stats.dart';
 import 'package:workout_tracker/pages/workouts.dart';
 import 'package:workout_tracker/objects/workout.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+final localDatabaseProvider =
+    Provider<WorkoutDataBase>((ref) => WorkoutDataBase());
 
 void main() async {
   await Hive.initFlutter();
@@ -13,7 +17,7 @@ void main() async {
 
   var workoutBox = await Hive.openBox("workoutApp");
 
-  runApp(MainApp());
+  runApp(ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatefulWidget {
@@ -32,36 +36,15 @@ class _MainAppState extends State<MainApp> {
     });
   }
 
-  @override
-  void initState() {
-    if (workoutBox.get("WORKOUTDATA") == null) {
-      db.createSampleData();
-    } else {
-      db.loadData();
-    }
-    super.initState();
-  }
-
   var workoutBox = Hive.box("workoutApp");
-
-  WorkoutDataBase db = WorkoutDataBase();
 
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      Workouts(
-        workoutsList: db.workoutsList,
-        updateData: db.updateData,
-      ),
-      const Stats()
-    ];
+    final pages = [Workouts(), const Stats()];
 
     return MaterialApp(
       routes: {
-        '/workouts': (context) => Workouts(
-              workoutsList: db.workoutsList,
-              updateData: db.updateData,
-            ),
+        '/workouts': (context) => Workouts(),
         '/stats': (context) => Stats(),
       },
       debugShowCheckedModeBanner: false,
