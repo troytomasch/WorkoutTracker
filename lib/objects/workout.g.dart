@@ -22,13 +22,14 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       fields[2] as String,
       fields[3] as String,
       fields[4] as WorkoutType,
+      fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Workout obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       ..writeByte(3)
       ..write(obj.description)
       ..writeByte(4)
-      ..write(obj.type);
+      ..write(obj.type)
+      ..writeByte(5)
+      ..write(obj.id);
   }
 
   @override

@@ -31,5 +31,9 @@ class Workout {
   @HiveField(4)
   WorkoutType type;
 
-  Workout(this.title, this.length, this.date, this.description, this.type);
+  @HiveField(5)
+  String id;
+
+  Workout(
+      this.title, this.length, this.date, this.description, this.type, this.id);
 }

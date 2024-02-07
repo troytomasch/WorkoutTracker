@@ -23,11 +23,20 @@ class _WorkoutsState extends ConsumerState<Workouts> {
     setState(() {
       ref
           .read(localDatabaseProvider)
-          .addToList(Workout(title, length, date, description, type));
+          .addToList(title, length, date, description, type);
     });
 
     ref.read(localDatabaseProvider).updateData();
     Navigator.pop(context);
+  }
+
+  void deleteWorkout(id) {
+    setState(() {
+      ref.read(localDatabaseProvider).deleteWorkout(id);
+      ref.read(localDatabaseProvider).updateData();
+    });
+
+    Navigator.of(context).pop();
   }
 
   final workoutBox = Hive.box("workoutApp");
@@ -69,6 +78,7 @@ class _WorkoutsState extends ConsumerState<Workouts> {
         itemCount: workoutList.length,
         itemBuilder: (context, index) => WorkoutTile(
           workout: workoutList[index],
+          deleteWorkout: deleteWorkout,
         ),
       ),
     );

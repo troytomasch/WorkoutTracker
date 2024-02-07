@@ -1,6 +1,9 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../objects/workout.dart';
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
 
 class WorkoutDataBase {
   List<Workout> workoutsList = [];
@@ -9,12 +12,17 @@ class WorkoutDataBase {
 
   void createSampleData() {
     workoutsList = [
-      Workout("Easy Run", 1, "1/25/2024", "Chilling.", WorkoutType.run),
+      Workout("Easy Run", 1, "1/25/2024", "Chilling.", WorkoutType.run,
+          "sampleData"),
     ];
   }
 
-  void addToList(Workout workout) {
-    workoutsList = [...workoutsList, workout];
+  void addToList(String title, double length, String date, String description,
+      WorkoutType type) {
+    workoutsList = [
+      ...workoutsList,
+      Workout(title, length, date, description, type, uuid.v1())
+    ];
   }
 
   void loadData() {
@@ -22,8 +30,18 @@ class WorkoutDataBase {
     workoutsList = [];
     for (final workout in workouts) {
       workoutsList.add(Workout(workout.title, workout.length, workout.date,
-          workout.description, workout.type));
+          workout.description, workout.type, uuid.v1()));
     }
+  }
+
+  void deleteWorkout(String id) {
+    List<Workout> newList = [];
+    for (final workout in workoutsList) {
+      if (workout.id != id) {
+        newList.add(workout);
+      }
+    }
+    workoutsList = newList;
   }
 
   void updateData() {
